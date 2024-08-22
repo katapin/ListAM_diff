@@ -180,21 +180,6 @@ def _main():
     elif argnspace.command == 'fill':
         pass
 
-    exit()
-
-
-def test_parse_showcase():
-    import pickle
-    with open('bsobj_mon.dat', 'rb') as f:
-        soup = pickle.load(f)
-
-    cards = parse_showcase(soup)
-    data={'Cockie': "My cokies",
-          'date_created': datetime.now().isoformat(),
-          'Cards': cards}
-    with open('data.json', 'w') as f:
-        json.dump(data, f, cls=EnhancedJSONEncoder, ensure_ascii=True, indent=4)
-
 
 if __name__ == '__main__':
     _main()
