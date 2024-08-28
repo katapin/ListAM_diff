@@ -1,3 +1,4 @@
+"""Read cards data from the site."""
 import sys
 import time
 import random
@@ -61,17 +62,6 @@ def request_url(url: str, extra_headers: dict = None, method: str = 'GET'):
     if resp.headers['Set-Cookie']:  # Save cookie
         base_headers['Cookie'] = resp.headers['Set-Cookie'] + '; lang=0'
     return resp
-
-
-def parse_showcase(soup: BeautifulSoup) -> list:
-    """Parse a single page with many cards."""
-    gls = soup.findAll('div', attrs={'class': 'gl'})  # aggregator tag of cards <div class="gl>
-    gl = gls[-1]  # gls[0] - VIP cards, gls[1] - regular
-    result = []
-    for a in gl:  # <a href> tag
-        card = Card.from_tag(a)
-        result.append(card)
-    return result
 
 
 def go_through_showcases(request_parameters: dict) -> dict:
@@ -178,7 +168,9 @@ def _main():
     elif argnspace.command == 'update':
         command_update(argnspace.reffile[0])
     elif argnspace.command == 'fill':
-        pass
+        print("Error: this functionality is not implemented yet.")
+        exit(1)
+
 
 
 if __name__ == '__main__':

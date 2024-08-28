@@ -1,10 +1,11 @@
+"""Compare to state files."""
 import sys
 import argparse
 from datetime import datetime
 from common import *
 
 
-def compare(file1: str, file2: str):
+def compare(file1: str, file2: str, *, reportfile: str = None):
     json1, json2 = read_json(file1), read_json(file2)
     if json1['meta']['parameters'] != json2['meta']['parameters']:
         print("Error: Can't compare file produced with query parameters.")
@@ -49,29 +50,40 @@ def compare(file1: str, file2: str):
             salt.remove(id)
 
     print(f'Changed price:  {len(spr)}')
-    for id in spr:
+    for id in sorted(spr):
         print(f"{ndct[id].fullurl:{uw}} {odct[id].price:{6}} -> {ndct[id].price:{6}}")
 
     print(f'Other changes:  {len(salt)}')
-    for id in salt:
-        print(f"{ndct[id].fullurl:{uw}} {ndct[id].price:^{lw+rw+4}}")
+    for id in sorted(salt):
+        print(f"{ndct[id].fullurl:{uw}} {ndct[id].price:^{6}}")
 
     print(f'New:   {len(snew)}')
-    for id in snew:
-        print(f"{ndct[id].fullurl:{uw}} {ndct[id].price:^{lw+rw+4}}")
+    for id in sorted(snew):
+        print(f"{ndct[id].fullurl:{uw}} {ndct[id].price:^{6}}")
 
     print(f'Gone:  {len(sold)}')
-    for id in sold:
+    for id in sorted(sold):
         print(f"{odct[id].fullurl:{uw}}")
+
+    if reportfile:
+        gnew = Gallery([ndct[id] for id in sorted(snew)], title='New')
+        gpr = Gallery([ndct[id] for id in sorted(spr)], title='Changed  their price')
+        galt = Gallery([ndct[id] for id in sorted(spr)], title='Other changes')
+        save_html(reportfile, galleries=[gnew, gpr, galt],
+                  pagetitle=f"{ofile} vs {nfile}")
+
 
 
 def _main():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('file', nargs=2,
                                help="Files to compare")
+    argparser.add_argument('--html', nargs='?',
+                           help="Create html report")
 
     argnspace = argparser.parse_args(sys.argv[1:])
-    compare(*argnspace.file)
+
+    compare(*argnspace.file, reportfile=argnspace.html)
 
 
 if __name__ == '__main__':
